@@ -1,0 +1,19 @@
+# Environment variables (NEVER COMMIT REAL SECRETS)
+.env
+.env.local
+.env.development
+.env.production
+*.env
+
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor & System
+.DS_Store
+.vscode/
+.idea/
