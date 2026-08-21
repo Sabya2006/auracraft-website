@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, Key, Sparkles } from 'lucide-react';
+import { X, Lock, Key, UserCheck } from 'lucide-react';
 import API_BASE_URL from '../config/api';
 
 export default function StaffLoginModal({ onClose, onLoginSuccess }) {
-  const [email, setEmail] = useState('');
+  const [oraCraftId, setOraCraftId] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleQuickFill = () => {
-    setEmail('admin@auracraft.com');
-    // Fill placeholder for quick demo testing
-    setPassword('admin123');
-    setErrorMsg('');
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,7 +17,7 @@ export default function StaffLoginModal({ onClose, onLoginSuccess }) {
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ oraCraftId, password })
       });
 
       const data = await res.json();
@@ -34,7 +27,7 @@ export default function StaffLoginModal({ onClose, onLoginSuccess }) {
         onLoginSuccess(data.token, data.user);
         onClose();
       } else {
-        setErrorMsg(data.message || 'Invalid staff credentials');
+        setErrorMsg(data.message || 'Invalid OraCraft ID or password.');
       }
     } catch (err) {
       setLoading(false);
@@ -51,64 +44,49 @@ export default function StaffLoginModal({ onClose, onLoginSuccess }) {
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0d132a]">
           <div className="flex items-center gap-2">
             <Lock className="w-5 h-5 text-purple-400" />
-            <h3 className="text-base font-bold text-white">Internal Corporate Staff Portal</h3>
+            <h3 className="text-base font-bold text-white">OraCraft Control Center Log In</h3>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Content */}
+        {/* Form Content */}
         <div className="p-6 space-y-6">
-          
-          {/* Demo Pre-fill Banner */}
-          <div className="bg-purple-500/10 border border-purple-500/30 p-3 rounded-xl flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-purple-300">
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <span>Demo Staff Login Assistant</span>
-            </div>
-            <button
-              onClick={handleQuickFill}
-              className="bg-purple-500 text-black font-extrabold px-3 py-1 rounded-lg hover:bg-purple-400 transition-colors"
-            >
-              Fill Staff Email
-            </button>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
             
             <div>
-              <label className="input-label flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-gray-400" />
-                Corporate Email
+              <label className="input-label flex items-center gap-1.5 text-xs font-bold text-gray-200">
+                <UserCheck className="w-3.5 h-3.5 text-amber-400" />
+                OraCraft ID *
               </label>
               <input
-                type="email"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@auracraft.com"
-                className="input-field"
+                value={oraCraftId}
+                onChange={(e) => setOraCraftId(e.target.value.toUpperCase())}
+                placeholder="Enter assigned OraCraft ID"
+                className="input-field uppercase font-mono font-bold tracking-wider text-amber-400"
               />
             </div>
 
             <div>
-              <label className="input-label flex items-center gap-1.5">
+              <label className="input-label flex items-center gap-1.5 text-xs font-bold text-gray-200">
                 <Key className="w-3.5 h-3.5 text-gray-400" />
-                Password
+                Password *
               </label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Enter password"
                 className="input-field"
               />
             </div>
 
             {errorMsg && (
-              <p className="text-xs text-rose-400 bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20 font-semibold">
+              <p className="text-xs text-rose-400 bg-rose-500/10 p-3 rounded-xl border border-rose-500/30 font-semibold leading-relaxed">
                 {errorMsg}
               </p>
             )}
@@ -116,16 +94,16 @@ export default function StaffLoginModal({ onClose, onLoginSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl text-xs transition-colors shadow-lg shadow-purple-600/30"
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-extrabold py-3.5 rounded-xl text-xs transition-colors shadow-lg shadow-purple-600/30"
             >
-              {loading ? 'Authenticating Staff Token...' : 'Log In to Staff Dashboard'}
+              {loading ? 'Authenticating Token...' : 'Log In to Control Center'}
             </button>
 
           </form>
 
           <div className="text-center border-t border-white/10 pt-4">
-            <p className="text-[11px] text-gray-500">
-              Restricted area for authorized AuraCraft agency directors & account managers only.
+            <p className="text-[11px] text-gray-400 leading-relaxed">
+              🔒 <strong>Closed Access System:</strong> Standard Gmail or unlisted email addresses are strictly rejected. Enter your Director-assigned OraCraft ID.
             </p>
           </div>
 

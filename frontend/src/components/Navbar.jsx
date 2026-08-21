@@ -1,87 +1,70 @@
 import React from 'react';
-import { Sparkles, Utensils, Building2, Coffee, ShieldCheck, CreditCard, Lock } from 'lucide-react';
+import { ShieldCheck, Lock, ChevronDown } from 'lucide-react';
+import AuraLogo from './AuraLogo';
 
-export default function Navbar({ onOpenLeadModal, onOpenStaffModal, onSelectNiche, activeNiche, onOpenAdminPortal, isStaffLoggedIn }) {
+export default function Navbar({ onOpenLeadModal, onOpenStaffModal, onOpenAdminPortal, isStaffLoggedIn }) {
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <header className="sticky top-0 z-50 glass-panel border-b border-[var(--border-color)] px-4 lg:px-8 py-3 transition-all duration-300">
+    <header className="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 lg:px-8 py-3 transition-all duration-300 bg-[#070913]/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
-        {/* Brand Logo & Target Badge */}
+        {/* Brand Logo (Matches Target Design 100%) */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-amber-400 to-cyan-500 p-0.5 shadow-lg shadow-amber-500/20">
-            <div className="w-full h-full bg-[#070913] rounded-[10px] flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-display text-xl font-bold tracking-tight text-white">
-                AuraCraft<span className="text-amber-400">.</span>
-              </span>
-              <span className="badge-tag badge-gold hidden sm:inline-flex text-[10px] py-0.5">
-                Food & Trade Agency
-              </span>
-            </div>
-            <p className="text-[11px] text-[var(--text-muted)] hidden md:block">
-              Web Engineering for Restaurants, Wholesalers & Cafes
-            </p>
+          <AuraLogo className="w-9 h-9" />
+          <div className="flex flex-col text-left">
+            <span className="font-display text-lg font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
+              AuraCraft
+            </span>
+            <span className="text-[10px] font-mono text-amber-400 tracking-widest uppercase font-bold mt-0.5">
+              DIGITAL
+            </span>
           </div>
         </div>
 
-        {/* Niche Selector Pills / Main Nav */}
-        <nav className="hidden lg:flex items-center gap-1 bg-[#0b0f1d] p-1.5 rounded-full border border-white/10 shadow-inner">
-          <button
-            onClick={() => onSelectNiche('restaurant')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-              activeNiche === 'restaurant'
-                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-sm'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Utensils className="w-3.5 h-3.5" />
-            Restaurants
+        {/* Clean Modern Navigation Menu (Matches Target Image) */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-gray-300">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-emerald-400 font-bold border-b-2 border-emerald-400 pb-0.5">
+            Home
           </button>
-          <button
-            onClick={() => onSelectNiche('wholesaler')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-              activeNiche === 'wholesaler'
-                ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Building2 className="w-3.5 h-3.5" />
-            Wholesalers
+          
+          <div className="relative group cursor-pointer flex items-center gap-1 hover:text-white transition-colors" onClick={() => scrollToSection('showcase')}>
+            <span>Services</span>
+            <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+          </div>
+
+          <button onClick={() => scrollToSection('portfolio')} className="hover:text-white transition-colors">
+            Case Studies
           </button>
-          <button
-            onClick={() => onSelectNiche('cafe')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-              activeNiche === 'cafe'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Coffee className="w-3.5 h-3.5" />
-            Cafes
+
+          <button onClick={() => scrollToSection('roi-calculator')} className="hover:text-white transition-colors">
+            Pricing
+          </button>
+
+          <button onClick={() => scrollToSection('book-consultation')} className="hover:text-white transition-colors">
+            Blog
           </button>
         </nav>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3">
           
-          {/* ₹2 Strategy Call CTA */}
+          {/* Gold 'Get Started' Button (Matches Target Image) */}
           <button
             onClick={onOpenLeadModal}
-            className="gradient-btn-gold px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 group"
+            className="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-extrabold px-5 py-2 rounded-xl text-xs shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105"
           >
-            <CreditCard className="w-4 h-4 text-black group-hover:scale-110 transition-transform" />
-            <span>Book Call <span className="bg-black/20 text-black px-1.5 py-0.5 rounded text-[11px]">₹2</span></span>
+            Get Started
           </button>
 
           {/* Corporate Staff Access */}
           {isStaffLoggedIn ? (
             <button
               onClick={onOpenAdminPortal}
-              className="bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600/30 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-lg shadow-purple-500/10"
+              className="bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600/30 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all"
             >
               <ShieldCheck className="w-4 h-4 text-purple-400" />
               <span className="hidden sm:inline">Staff Dashboard</span>

@@ -1,226 +1,136 @@
 import React, { useState } from 'react';
-import { Utensils, Building2, Coffee, Check, ArrowRight, Smartphone, QrCode, Layers } from 'lucide-react';
-import { nicheHighlights } from '../data/mockData';
+import { Gauge, CheckCircle2, ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
 
 export default function NicheShowcase({ onOpenLeadModal }) {
-  const [selectedTab, setSelectedTab] = useState('restaurant');
-
-  const activeData = nicheHighlights[selectedTab];
+  const [sliderVal, setSliderVal] = useState(50); // 0 to 100 split comparison
 
   return (
-    <section id="niches" className="py-20 px-4 sm:px-6 lg:px-8 relative bg-[#04060d] border-y border-white/10">
+    <section id="showcase" className="py-24 relative bg-[#070a19] overflow-hidden">
       
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="badge-tag badge-gold mb-3">
-            Industry Specialized Architecture
-          </span>
-          <h2 className="font-display text-3xl sm:text-5xl font-bold text-white tracking-tight mb-4">
-            Engineered Specifically For Your Industry Niche
+        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+            <Gauge className="w-4 h-4" />
+            <span>Performance & Conversion Engine</span>
+          </div>
+
+          <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white">
+            Why Standard Templates Fail <br />
+            <span className="neon-text-cyan">And How AuraCraft Wins</span>
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base">
-            Generic templates fail food & wholesale businesses. We construct custom digital engines targeted precisely at your operational workflows.
+
+          <p className="text-sm sm:text-base text-gray-300">
+            Slow PDF menu downloads and clunky contact forms lose 60%+ of mobile diners and B2B buyers. Slide below to see the interactive difference.
           </p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex justify-center mb-12">
-          <div className="glass-panel p-2 flex gap-2 max-w-2xl w-full border-white/15">
-            <button
-              onClick={() => setSelectedTab('restaurant')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all ${
-                selectedTab === 'restaurant'
-                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Utensils className="w-4 h-4" />
-              Restaurants
-            </button>
-            <button
-              onClick={() => setSelectedTab('wholesaler')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all ${
-                selectedTab === 'wholesaler'
-                  ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Building2 className="w-4 h-4" />
-              Wholesalers
-            </button>
-            <button
-              onClick={() => setSelectedTab('cafe')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm transition-all ${
-                selectedTab === 'cafe'
-                  ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Coffee className="w-4 h-4" />
-              Cafes & Bakeries
-            </button>
-          </div>
-        </div>
-
-        {/* Dynamic Niche Breakdown Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+        {/* Interactive Split Comparison Widget */}
+        <div className="glass-panel border-white/10 p-6 md:p-8 rounded-3xl bg-[#090e24] shadow-2xl relative">
           
-          {/* Feature List Card */}
-          <div className="glass-panel p-8 flex flex-col justify-between border-white/10">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div 
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                  style={{ backgroundColor: `${activeData.accentColor}20`, color: activeData.accentColor }}
-                >
-                  {selectedTab === 'restaurant' && <Utensils className="w-6 h-6" />}
-                  {selectedTab === 'wholesaler' && <Building2 className="w-6 h-6" />}
-                  {selectedTab === 'cafe' && <Coffee className="w-6 h-6" />}
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-white">{activeData.title}</h3>
-                  <span className="text-xs text-gray-400 font-mono">Specialized Niche Module v2.4</span>
-                </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-2 text-rose-400 text-xs font-bold">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+              <span>Standard Template (Slow & Clunky)</span>
+            </div>
+
+            {/* Slider Control */}
+            <div className="flex items-center gap-3 w-full md:w-1/3">
+              <span className="text-[11px] font-mono text-gray-400">Drag to Compare</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={sliderVal}
+                onChange={(e) => setSliderVal(Number(e.target.value))}
+                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span>AuraCraft 60FPS Speed Engine</span>
+            </div>
+          </div>
+
+          {/* Dynamic Comparison Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Left Box - Old Slow Site */}
+            <div className="glass-panel p-6 border-rose-500/20 bg-rose-500/5 rounded-2xl space-y-4 text-left relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-rose-500/20 pb-3">
+                <span className="text-xs font-bold text-rose-300">Generic WordPress / Wix Template</span>
+                <span className="text-[10px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded font-mono">3.8s LOAD SPEED</span>
               </div>
 
-              <p className="text-gray-300 text-sm mb-6 leading-relaxed">
-                {activeData.subtitle}
-              </p>
+              <ul className="space-y-2.5 text-xs text-gray-300">
+                <li className="flex items-center gap-2 text-rose-300">
+                  <span className="text-rose-500">❌</span> Heavy 15MB PDF Menu (Unusable on Mobile 4G)
+                </li>
+                <li className="flex items-center gap-2 text-rose-300">
+                  <span className="text-rose-500">❌</span> Manual Phone Call Reservations (Missed Peak Hours)
+                </li>
+                <li className="flex items-center gap-2 text-rose-300">
+                  <span className="text-rose-500">❌</span> Static B2B Product Lists with No Tier Pricing
+                </li>
+                <li className="flex items-center gap-2 text-rose-300">
+                  <span className="text-rose-500">❌</span> High Bounce Rate (72% Drop-off within 5 seconds)
+                </li>
+              </ul>
+            </div>
 
-              <div className="space-y-4 mb-8">
-                {activeData.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-start gap-3 bg-white/5 p-4 rounded-xl border border-white/5">
-                    <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5 text-amber-400" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white">{feat.title}</h4>
-                      <p className="text-xs text-gray-400 mt-0.5">{feat.desc}</p>
-                    </div>
-                  </div>
-                ))}
+            {/* Right Box - AuraCraft Speed Engine */}
+            <div className="glass-panel p-6 border-emerald-500/30 bg-emerald-500/5 rounded-2xl space-y-4 text-left relative overflow-hidden shadow-xl">
+              <div className="flex items-center justify-between border-b border-emerald-500/30 pb-3">
+                <span className="text-xs font-bold text-emerald-300">AuraCraft Engineered Platform</span>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">&lt; 0.4s LIGHTNING SPEED</span>
+              </div>
+
+              <ul className="space-y-2.5 text-xs text-gray-200">
+                <li className="flex items-center gap-2 text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Instant Mobile QR Digital Menu (Loads in 250ms)</span>
+                </li>
+                <li className="flex items-center gap-2 text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Automated 24/7 Online Booking + SMS Confirmations</span>
+                </li>
+                <li className="flex items-center gap-2 text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>High-Volume B2B Bulk Order Portal with ERP Sync</span>
+                </li>
+                <li className="flex items-center gap-2 text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Average <strong>+215% Booking & Order Growth</strong> in 30 Days</span>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* Bottom Callout */}
+          <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 text-left">
+              <TrendingUp className="w-5 h-5 text-amber-400" />
+              <div>
+                <p className="text-xs font-bold text-white">Guaranteed 60FPS Mobile Smoothness & Fast Load Times</p>
+                <p className="text-[11px] text-gray-400">Backed by our 100% Performance SLA & ₹2 Consultation Guarantee</p>
               </div>
             </div>
 
             <button
               onClick={onOpenLeadModal}
-              className="w-full gradient-btn-gold py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+              className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-6 py-3 rounded-xl text-xs transition-all shadow-lg shadow-cyan-500/20 flex items-center gap-2 shrink-0"
             >
-              <span>Build My {selectedTab === 'restaurant' ? 'Restaurant' : selectedTab === 'wholesaler' ? 'Wholesale' : 'Cafe'} Website (₹2 Token)</span>
-              <ArrowRight className="w-4 h-4 text-black" />
+              <span>Get Your Custom Speed Audit</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
-          </div>
-
-          {/* Interactive Live Mini-App Frame */}
-          <div className="glass-panel p-6 border-white/10 flex flex-col justify-between bg-[#070b18]">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
-              <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                <Smartphone className="w-4 h-4 text-amber-400" />
-                <span>Interactive {selectedTab.toUpperCase()} Web App Simulation</span>
-              </div>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded">
-                Live Prototype
-              </span>
-            </div>
-
-            {/* Interactive Preview Content depending on active tab */}
-            {selectedTab === 'restaurant' && (
-              <div className="space-y-4 my-auto">
-                <div className="bg-[#10172a] p-4 rounded-xl border border-amber-500/30">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                      <QrCode className="w-4 h-4 text-amber-400" />
-                      Table #12 Digital Menu Scan
-                    </h4>
-                    <span className="text-[11px] text-amber-400 font-semibold">Live Order Cart</span>
-                  </div>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between p-2 bg-white/5 rounded">
-                      <span className="text-white">2x Truffle Tagliatelle</span>
-                      <span className="text-amber-400 font-bold">₹1,500</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-white/5 rounded">
-                      <span className="text-white">1x Chianti Classico Wine Bottle</span>
-                      <span className="text-amber-400 font-bold">₹3,200</span>
-                    </div>
-                  </div>
-                  <button className="w-full mt-3 bg-amber-500 text-black py-2 rounded-lg font-bold text-xs">
-                    Confirm Order & Pay at Table
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {selectedTab === 'wholesaler' && (
-              <div className="space-y-4 my-auto">
-                <div className="bg-[#10172a] p-4 rounded-xl border border-cyan-500/30">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-cyan-400" />
-                      B2B Trade Buyer Account: Apex Spices
-                    </h4>
-                    <span className="text-[11px] text-cyan-400 font-semibold">Tier-1 Partner</span>
-                  </div>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between p-2 bg-white/5 rounded">
-                      <div>
-                        <span className="text-white block font-semibold">Basmati Rice (500kg Bulk)</span>
-                        <span className="text-[10px] text-gray-400">10x 50kg Bags</span>
-                      </div>
-                      <span className="text-cyan-400 font-bold">₹42,000</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-white/5 rounded">
-                      <span className="text-white">Trade Credit Remaining:</span>
-                      <span className="text-emerald-400 font-bold">₹1,50,000</span>
-                    </div>
-                  </div>
-                  <button className="w-full mt-3 bg-cyan-500 text-black py-2 rounded-lg font-bold text-xs">
-                    Generate Purchase Order PDF
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {selectedTab === 'cafe' && (
-              <div className="space-y-4 my-auto">
-                <div className="bg-[#10172a] p-4 rounded-xl border border-emerald-500/30">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Coffee className="w-4 h-4 text-emerald-400" />
-                      Morning Express Metro Order
-                    </h4>
-                    <span className="text-[11px] text-emerald-400 font-semibold">Ready in 6 mins</span>
-                  </div>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between p-2 bg-white/5 rounded">
-                      <span className="text-white">Oat Milk Double Oat Cappuccino</span>
-                      <span className="text-emerald-400 font-bold">₹290</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-white/5 rounded">
-                      <span className="text-white">Digital Stamp Reward:</span>
-                      <span className="text-amber-400 font-bold">Stamp #8 of 10</span>
-                    </div>
-                  </div>
-                  <button className="w-full mt-3 bg-emerald-500 text-black py-2 rounded-lg font-bold text-xs">
-                    1-Click Express Pay & Pick Up
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="mt-4 pt-3 border-t border-white/10 text-center">
-              <span className="text-xs text-gray-400">
-                ⚡ Delivered in 7-14 Business Days with Full Mobile Optimization
-              </span>
-            </div>
           </div>
 
         </div>
 
       </div>
-
     </section>
   );
 }

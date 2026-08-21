@@ -1,5 +1,6 @@
 import React from 'react';
-import { Sparkles, Utensils, Building2, Coffee, Lock, ShieldCheck, Mail, Phone, MapPin } from 'lucide-react';
+import { Utensils, Building2, Coffee, Lock, ShieldCheck, Mail, Phone, MapPin } from 'lucide-react';
+import AuraLogo from './AuraLogo';
 
 export default function Footer({ onOpenLeadModal, onOpenStaffModal, onSelectNiche }) {
   return (
@@ -8,17 +9,18 @@ export default function Footer({ onOpenLeadModal, onOpenStaffModal, onSelectNich
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
-          {/* Col 1: Brand */}
+          {/* Col 1: Brand Logo */}
           <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-cyan-500 p-0.5">
-                <div className="w-full h-full bg-[#070913] rounded-[10px] flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                </div>
+            <div className="flex items-center gap-3">
+              <AuraLogo className="w-8 h-8" />
+              <div className="flex flex-col text-left">
+                <span className="font-display text-lg font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
+                  AuraCraft
+                </span>
+                <span className="text-[9px] font-mono text-amber-400 tracking-widest uppercase font-bold mt-0.5">
+                  DIGITAL
+                </span>
               </div>
-              <span className="font-display text-xl font-bold text-white">
-                AuraCraft<span className="text-amber-400">.</span>
-              </span>
             </div>
             <p className="text-gray-400 leading-relaxed text-xs">
               Premier web engineering and digital application development agency dedicated exclusively to Restaurants, Wholesalers, and Cafes.
