@@ -17,7 +17,7 @@ const validateEnvironment = () => {
   if (isProd) {
     if (!process.env.JWT_SECRET) missingVars.push('JWT_SECRET');
     if (!process.env.CORS_ORIGIN) missingVars.push('CORS_ORIGIN');
-    if (!process.env.ADMIN_EMAIL) missingVars.push('ADMIN_EMAIL');
+    if (!process.env.ADMIN_ORACRAFT_ID) missingVars.push('ADMIN_ORACRAFT_ID');
     if (!process.env.ADMIN_PASSWORD) missingVars.push('ADMIN_PASSWORD');
 
     if (missingVars.length > 0) {
