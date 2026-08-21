@@ -134,7 +134,8 @@ app.use((req, res) => {
 app.use((err, req, res, _next) => {
   const correlationId = 'ERR-AURA-' + crypto.randomBytes(4).toString('hex').toUpperCase();
   
-  console.error(`[${correlationId}] Internal Server Error:`, err.stack || err.message);
+  const sanitizedErr = (err.stack || err.message || '').replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi, '[REDACTED_EMAIL]');
+  console.error(`[${correlationId}] Internal Server Error:`, sanitizedErr);
 
   res.status(500).json({
     success: false,
