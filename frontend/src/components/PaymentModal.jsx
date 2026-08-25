@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
-import { X, QrCode, CreditCard, Building, ShieldCheck, CheckCircle2, Sparkles, Lock, Clock, UserCheck, Bot, Send, Loader2, ExternalLink, AlertCircle, Zap } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle2, Lock, Clock, UserCheck, Bot, Send, Loader2, ExternalLink, AlertCircle, Zap, CreditCard, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import API_BASE_URL from '../config/api';
 
 export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
   const [step, setStep] = useState('payment'); // 'payment', 'schedule', 'receipt'
-  const [method, setMethod] = useState('upi_qr'); // 'upi_qr', 'upi_id', 'card', 'netbanking'
-  const [upiId, setUpiId] = useState('');
-  const [utrNumber, setUtrNumber] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [verifyingStatus, setVerifyingStatus] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,10 +29,6 @@ export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
     email: 'client@auracraft.digital'
   };
 
-  // Real Scannable UPI Intent payload URL for GPay / PhonePe / Paytm
-  const upiIntentPayload = `upi://pay?pa=auracraft.agency@okaxis&pn=AuraCraft%20Digital&am=2.00&cu=INR&tn=Strategy%20Call%20Booking%20Fee`;
-  const realQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiIntentPayload)}&color=000000&bgcolor=ffffff`;
-
   const triggerConfetti = () => {
     try {
       confetti({
@@ -49,7 +41,7 @@ export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
     }
   };
 
-  // Helper to dynamically load Razorpay SDK if blocked or missing
+  // Helper to dynamically load Razorpay SDK script
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       if (window.Razorpay) {
@@ -73,19 +65,19 @@ export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
         setAvailableSlots(data.slots);
       } else {
         const fallbackSlots = [
-          { id: 'slot-1', date: '2026-08-25', time: '10:00 AM - 10:30 AM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
-          { id: 'slot-2', date: '2026-08-25', time: '11:30 AM - 12:00 PM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
-          { id: 'slot-3', date: '2026-08-25', time: '02:00 PM - 02:30 PM IST', staffName: 'Priya Sundaram (Client Success Manager)', status: 'AVAILABLE' },
-          { id: 'slot-4', date: '2026-08-26', time: '10:30 AM - 11:00 AM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' }
+          { id: 'slot-1', date: '2026-08-26', time: '10:00 AM - 10:30 AM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
+          { id: 'slot-2', date: '2026-08-26', time: '11:30 AM - 12:00 PM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
+          { id: 'slot-3', date: '2026-08-26', time: '02:00 PM - 02:30 PM IST', staffName: 'Priya Sundaram (Client Success Manager)', status: 'AVAILABLE' },
+          { id: 'slot-4', date: '2026-08-27', time: '10:30 AM - 11:00 AM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' }
         ];
         setAvailableSlots(fallbackSlots);
       }
     } catch (err) {
       console.warn('[Slots Fallback]', err.message);
       const fallbackSlots = [
-        { id: 'slot-1', date: '2026-08-25', time: '10:00 AM - 10:30 AM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
-        { id: 'slot-2', date: '2026-08-25', time: '11:30 AM - 12:00 PM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
-        { id: 'slot-3', date: '2026-08-25', time: '02:00 PM - 02:30 PM IST', staffName: 'Priya Sundaram (Client Success Manager)', status: 'AVAILABLE' }
+        { id: 'slot-1', date: '2026-08-26', time: '10:00 AM - 10:30 AM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
+        { id: 'slot-2', date: '2026-08-26', time: '11:30 AM - 12:00 PM IST', staffName: 'Vikram Mehta (Lead Architect)', status: 'AVAILABLE' },
+        { id: 'slot-3', date: '2026-08-26', time: '02:00 PM - 02:30 PM IST', staffName: 'Priya Sundaram (Client Success Manager)', status: 'AVAILABLE' }
       ];
       setAvailableSlots(fallbackSlots);
     }
@@ -108,61 +100,13 @@ export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
       setChatMessages([
         {
           sender: 'bot',
-          text: `🎉 ₹2.00 Payment Verified Successfully! Welcome ${targetLead.clientName || 'Partner'}! Please select your preferred date & time slot from the staff-approved available slots below to confirm your strategy call:`
+          text: `🎉 ₹2.00 Razorpay Payment Verified Successfully! Welcome ${targetLead.clientName || 'Partner'}! Please select your preferred date & time slot from the staff-approved available slots below to confirm your strategy call:`
         }
       ]);
     }, 300);
   };
 
-  // STRICT MANUAL & UTR PAYMENT VERIFICATION
-  const handleVerifyUtrPayment = async (e) => {
-    if (e) e.preventDefault();
-    setErrorMessage('');
-
-    if (!utrNumber || utrNumber.trim().length < 6) {
-      setErrorMessage('Please enter your 12-Digit UTR / Transaction Reference Number from GPay/PhonePe after completing payment.');
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/leads/verify-payment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leadId: targetLead.id || 'lead-101',
-          paymentMethod: method === 'upi_qr' ? 'UPI QR Payment' : method === 'upi_id' ? 'UPI App' : method === 'card' ? 'Card' : 'NetBanking',
-          txnId: utrNumber.trim()
-        })
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        executeSuccessfulRedirect(data);
-      } else {
-        setErrorMessage(data.message || 'Payment verification failed. Please check your transaction reference number and try again.');
-        setIsProcessing(false);
-      }
-    } catch (_err) {
-      // Fallback verification check
-      const fallbackData = {
-        success: true,
-        bookingCode: 'AURAX-' + Math.floor(1000 + Math.random() * 9000),
-        paymentDetails: {
-          amount: 2.00,
-          currency: 'INR',
-          method: method.toUpperCase(),
-          txnId: utrNumber.trim(),
-          paymentDate: new Date().toISOString()
-        }
-      };
-      executeSuccessfulRedirect(fallbackData);
-    }
-  };
-
-  // FAIL-SAFE RAZORPAY GATEWAY DISPATCHER WITH AUTO-REDIRECT
+  // DIRECT RAZORPAY GATEWAY DISPATCHER WITH AUTO-REDIRECT TO SCHEDULER
   const handleRazorpaySDKPayment = async () => {
     setIsProcessing(true);
     setErrorMessage('');
@@ -344,243 +288,87 @@ export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
             </div>
           )}
           
-          {/* STEP 1: PAYMENT (FIXED ₹2 FEE) */}
+          {/* STEP 1: DIRECT RAZORPAY PAYMENT (FIXED ₹2 FEE) */}
           {step === 'payment' && (
-            <>
+            <div className="space-y-5">
               {/* Token Fee Box */}
-              <div className="bg-[#0e1428] p-4 rounded-xl border border-amber-500/30 flex justify-between items-center text-left">
+              <div className="bg-[#0e1428] p-5 rounded-2xl border border-amber-500/30 flex justify-between items-center text-left shadow-lg">
                 <div>
-                  <span className="text-[10px] text-gray-400 block font-mono">FIXED CONFIRMATION TOKEN</span>
-                  <span className="text-sm font-bold text-white">{targetLead.companyName || targetLead.clientName || 'Strategy Consultation Call'}</span>
+                  <span className="text-[10px] text-gray-400 block font-mono tracking-wider uppercase">FIXED CONFIRMATION TOKEN</span>
+                  <span className="text-base font-extrabold text-white">{targetLead.companyName || targetLead.clientName || 'Strategy Consultation Call'}</span>
+                  <span className="text-[11px] text-gray-400 block mt-0.5">Assigned to: {targetLead.clientName || 'Partner'}</span>
                 </div>
                 <div className="text-right">
-                  <span className="font-display text-2xl font-extrabold text-amber-400">₹2.00</span>
-                  <span className="text-[10px] text-emerald-400 block font-semibold">100% Refundable</span>
+                  <span className="font-display text-3xl font-extrabold text-amber-400">₹2.00</span>
+                  <span className="text-[10px] text-emerald-400 block font-bold">100% Refundable</span>
                 </div>
               </div>
 
-              {/* Verified Direct Razorpay Payment Banner */}
+              {/* Direct Razorpay Launch Hero Card */}
+              <div className="bg-[#0a0e1e] p-6 rounded-2xl border border-amber-500/30 text-center space-y-4 shadow-xl relative overflow-hidden">
+                <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/40">
+                  <Zap className="w-6 h-6 fill-amber-400" />
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-extrabold text-white">Direct Razorpay Payment Gateway</h4>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Pay securely via <strong className="text-gray-200">Google Pay, PhonePe, Paytm, BHIM, UPI, Cards, or NetBanking</strong>.
+                  </p>
+                </div>
+
+                {verifyingStatus ? (
+                  <div className="bg-emerald-500/20 text-emerald-300 p-4 rounded-xl border border-emerald-400 flex items-center justify-center gap-2 text-xs font-extrabold animate-pulse">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <span>✓ ₹2.00 Payment Verified! Opening Booking Scheduler...</span>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleRazorpaySDKPayment}
+                    disabled={isProcessing}
+                    className="w-full gradient-btn-gold py-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-2xl hover:scale-[1.02] transition-transform cursor-pointer"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-black" />
+                        <span>Opening Razorpay Gateway...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 fill-black" />
+                        <span className="text-sm">Pay ₹2.00 & Open Booking Scheduler</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                )}
+
+                <div className="flex items-center justify-center gap-4 text-[11px] text-gray-400 pt-2 border-t border-white/5">
+                  <span className="flex items-center gap-1">
+                    <CreditCard className="w-3.5 h-3.5 text-amber-400" /> All UPI Apps & Cards Supported
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Instant Auto-Redirect
+                  </span>
+                </div>
+              </div>
+
+              {/* Direct Razorpay.me Link Fallback Option */}
               <a
                 href={razorpayMeLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white p-3 rounded-xl flex items-center justify-between shadow-md transition-all group"
+                className="block text-center text-xs text-gray-400 hover:text-amber-400 transition-colors font-semibold py-1"
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center font-bold text-xs">
-                    <Zap className="w-4 h-4 fill-white" />
-                  </div>
-                  <div className="text-left">
-                    <span className="text-xs font-bold block leading-none">Pay via Official Razorpay Link</span>
-                    <span className="text-[10px] text-blue-200">razorpay.me/@sabyasachisahoo8632</span>
-                  </div>
-                </div>
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                Having trouble? Open Direct Link: <span className="underline font-mono">razorpay.me/@sabyasachisahoo8632</span> ↗
               </a>
 
-              {/* Payment Method Selector Tabs */}
-              <div className="grid grid-cols-4 gap-2 bg-[#090d1c] p-1.5 rounded-xl border border-white/10 text-xs">
-                <button
-                  type="button"
-                  onClick={() => { setMethod('upi_qr'); setErrorMessage(''); }}
-                  className={`py-2 rounded-lg font-bold transition-all flex flex-col items-center gap-1 ${
-                    method === 'upi_qr' ? 'bg-amber-500 text-black' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <QrCode className="w-4 h-4" />
-                  <span>UPI QR</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setMethod('upi_id'); setErrorMessage(''); }}
-                  className={`py-2 rounded-lg font-bold transition-all flex flex-col items-center gap-1 ${
-                    method === 'upi_id' ? 'bg-amber-500 text-black' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>UPI Apps</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setMethod('card'); setErrorMessage(''); }}
-                  className={`py-2 rounded-lg font-bold transition-all flex flex-col items-center gap-1 ${
-                    method === 'card' ? 'bg-amber-500 text-black' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Cards</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setMethod('netbanking'); setErrorMessage(''); }}
-                  className={`py-2 rounded-lg font-bold transition-all flex flex-col items-center gap-1 ${
-                    method === 'netbanking' ? 'bg-amber-500 text-black' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Building className="w-4 h-4" />
-                  <span>NetBank</span>
-                </button>
-              </div>
-
-              {/* Dynamic Method Form Screen */}
-              {method === 'upi_qr' && (
-                <div className="text-center space-y-4 bg-[#0a0e1e] p-6 rounded-xl border border-white/10">
-                  
-                  {/* Status Bar */}
-                  <div className="bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl flex items-center justify-between text-xs text-amber-300 font-semibold">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                      <span>Razorpay & UPI QR Gateway</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-gray-400">Scan & Confirm</span>
-                  </div>
-
-                  <p className="text-xs text-gray-300 font-semibold">Scan with Google Pay / PhonePe / Paytm / BHIM app</p>
-                  
-                  {/* Real HD Scannable UPI QR Code Image */}
-                  <div className="w-44 h-44 bg-white p-3 rounded-2xl mx-auto flex flex-col items-center justify-center shadow-2xl border-4 border-amber-400 relative">
-                    <img 
-                      src={realQrCodeUrl} 
-                      alt="Scannable ₹2.00 UPI QR Code" 
-                      className="w-full h-full object-contain rounded-lg"
-                    />
-                    <div className="absolute bottom-1 bg-amber-500 text-black text-[10px] font-black px-2 py-0.5 rounded shadow">
-                      ₹2.00 • Scannable UPI
-                    </div>
-                  </div>
-
-                  <p className="text-[11px] text-gray-400 font-mono">UPI ID: auracraft.agency@okaxis</p>
-
-                  {/* Verification Actions */}
-                  {verifyingStatus ? (
-                    <div className="bg-emerald-500/20 text-emerald-300 p-3 rounded-xl border border-emerald-400 flex items-center justify-center gap-2 text-xs font-extrabold animate-pulse">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>✓ ₹2.00 Payment Verified! Redirecting to Booking Schedule...</span>
-                    </div>
-                  ) : (
-                    <div className="space-y-3 pt-2 border-t border-white/10">
-                      <button
-                        type="button"
-                        onClick={handleRazorpaySDKPayment}
-                        disabled={isProcessing}
-                        className="w-full gradient-btn-gold py-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg cursor-pointer"
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin text-black" />
-                            <span>Opening Razorpay Gateway...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Pay ₹2.00 via Razorpay Gateway Overlay</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </>
-                        )}
-                      </button>
-
-                      {/* Manual UTR Verification Form */}
-                      <form onSubmit={handleVerifyUtrPayment} className="space-y-2 text-left">
-                        <label className="block text-[11px] font-bold text-gray-300">
-                          Or Enter 12-Digit UTR / Ref No. after paying via QR: *
-                        </label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={utrNumber}
-                            onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ''))}
-                            placeholder="e.g. 423984029348"
-                            className="input-field text-xs font-mono py-2 bg-[#050814]"
-                          />
-                          <button
-                            type="submit"
-                            disabled={isProcessing}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-2 rounded-xl shrink-0 cursor-pointer transition-colors"
-                          >
-                            Verify
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {method === 'upi_id' && (
-                <div className="space-y-4 bg-[#0a0e1e] p-4 rounded-xl border border-white/10 text-left">
-                  <div>
-                    <label className="input-label">Enter VPA / UPI ID:</label>
-                    <input
-                      type="text"
-                      value={upiId}
-                      onChange={(e) => setUpiId(e.target.value)}
-                      className="input-field text-xs font-mono"
-                      placeholder="username@upi"
-                    />
-                  </div>
-                  <p className="text-[11px] text-gray-400">Pay ₹2.00 via Razorpay UPI overlay or submit UTR reference ID.</p>
-                  <button
-                    type="button"
-                    onClick={handleRazorpaySDKPayment}
-                    disabled={isProcessing}
-                    className="w-full gradient-btn-gold py-3.5 rounded-xl font-extrabold text-xs cursor-pointer"
-                  >
-                    {isProcessing ? 'Connecting Razorpay Gateway...' : 'Pay ₹2.00 via Razorpay UPI'}
-                  </button>
-                </div>
-              )}
-
-              {method === 'card' && (
-                <div className="space-y-3 bg-[#0a0e1e] p-4 rounded-xl border border-white/10 text-left text-xs">
-                  <div>
-                    <label className="input-label">Card Number:</label>
-                    <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} className="input-field text-xs font-mono" placeholder="4532 •••• •••• 8912" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="input-label">Expiry Date:</label>
-                      <input type="text" placeholder="MM/YY" className="input-field text-xs" />
-                    </div>
-                    <div>
-                      <label className="input-label">CVV:</label>
-                      <input type="password" placeholder="•••" className="input-field text-xs" />
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRazorpaySDKPayment}
-                    disabled={isProcessing}
-                    className="w-full gradient-btn-gold py-3.5 rounded-xl font-extrabold text-xs cursor-pointer"
-                  >
-                    {isProcessing ? 'Connecting Razorpay Gateway...' : 'Pay ₹2.00 via Razorpay Card'}
-                  </button>
-                </div>
-              )}
-
-              {method === 'netbanking' && (
-                <div className="space-y-3 bg-[#0a0e1e] p-4 rounded-xl border border-white/10 text-left text-xs">
-                  <label className="input-label">Select Corporate Bank:</label>
-                  <select className="input-field text-xs">
-                    <option>HDFC Bank Corporate</option>
-                    <option>ICICI Bank Commercial</option>
-                    <option>State Bank of India (SBI)</option>
-                    <option>Axis Bank Business</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={handleRazorpaySDKPayment}
-                    disabled={isProcessing}
-                    className="w-full gradient-btn-gold py-3.5 rounded-xl font-extrabold text-xs cursor-pointer"
-                  >
-                    {isProcessing ? 'Connecting Razorpay Gateway...' : 'Pay ₹2.00 via Razorpay NetBanking'}
-                  </button>
-                </div>
-              )}
-
-              <div className="flex items-center justify-center gap-2 text-[11px] text-gray-500">
+              <div className="flex items-center justify-center gap-2 text-[11px] text-gray-500 pt-1">
                 <Lock className="w-3.5 h-3.5 text-emerald-400" />
                 256-Bit SSL Encryption • PCI-DSS Compliant Razorpay Gateway
               </div>
-            </>
+            </div>
           )}
 
           {/* STEP 2: CHAT-BASED MEETING SCHEDULING INTERFACE */}
@@ -704,7 +492,7 @@ export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-xl text-xs transition-colors cursor-pointer"
+                className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-xl text-xs transition-colors"
               >
                 Close & Return to Website
               </button>
