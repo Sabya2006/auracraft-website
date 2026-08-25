@@ -193,7 +193,7 @@ export default function PaymentModal({ lead, onClose, onPaymentComplete }) {
           key: keyToUse,
           amount: 200, // 200 paise = ₹2.00
           currency: 'INR',
-          name: 'AuraCraft Digital',
+          name: import.meta.env.VITE_RAZORPAY_BRAND_NAME || 'Sabya Sachi Sahoo',
           description: 'Fixed ₹2 Strategy Consultation Token Fee',
           order_id: orderIdToUse,
           handler: async function (response) {

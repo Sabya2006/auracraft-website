@@ -145,7 +145,7 @@ router.post('/create-razorpay-order', async (req, res) => {
     currency: 'INR',
     receipt: 'rcpt_' + (leadId || Date.now()),
     notes: {
-      agency: 'AuraCraft Digital',
+      agency: process.env.RAZORPAY_BRAND_NAME || 'Sabya Sachi Sahoo',
       purpose: 'Strategy Call Schedule Booking Fee'
     }
   };
